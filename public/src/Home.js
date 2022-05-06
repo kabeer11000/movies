@@ -22,8 +22,10 @@ const Home = () => {
     }, []);
     return (<div>
             <Banner movie={state ? state[0].movies[0] : undefined}/>
-            {state ? state.map(row => <Row title={row.genre} isLargeRow={row.movies.length >= 5}
-                                           movies={row.movies}/>) : <></>}
+            <div style={{marginTop: "2rem"}}>
+                {state ? state.map(row => <Row title={row.genre} isLargeRow={row.movies.length >= 5}
+                                               movies={row.movies}/>) : <></>}
+            </div>
         </div>
     );
 }
