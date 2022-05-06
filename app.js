@@ -3,7 +3,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
+var indexRouter = require('./routes/WebTorrent');
 var app = express();
 app.set("json spaces", 3)
 app.use(logger('dev'));
