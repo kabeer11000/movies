@@ -4,7 +4,7 @@ import "../Banner.css";
 import {getMovieDetails, getMovieSuggestions, getPlaybackURL, streamURI} from "../api";
 import {useSearchParams} from "react-router-dom";
 import Row from "../Row";
-
+const endsWith = (ext, str) => str.slice(0, -ext.length) === ext;
 const Player = ({movie, streamConfig}) => {
     const playerRef = React.useRef(null);
     // movie.torrents = movie.torrents.map(torrent => ({...torrent, magnet: `magnet:?xt=urn:btih:${torrent.hash}&dn=${encodeURIComponent(movie.title)}`}))
@@ -16,7 +16,7 @@ const Player = ({movie, streamConfig}) => {
         responsive: true,
         fluid: true,
         poster: movie.background_image_original,
-        sources: [{src: getPlaybackURL(streamConfig.stream_id, streamConfig.files[0].hash), type: "video/mp4"}]
+        sources: [{src: getPlaybackURL(streamConfig.stream_id, streamConfig.files.find(file => file.name.endsWith(".mp4")).hash), type: "video/mp4"}]
         // Souurces would come from a function which renders all source urls
         // sources: movie.torrents.map(torrent => ({src: streamURI + '/stream/v1/play?stream_id='+ torrent.hash + "&file=" + , type: "video/mp4"}))
     };

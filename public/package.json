@@ -14,7 +14,8 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "3.4.1",
     "react-youtube": "^7.11.3",
-    "video.js": "^7.18.1"
+    "video.js": "^7.18.1",
+    "webtorrent": "^1.8.16"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",

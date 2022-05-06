@@ -10,7 +10,28 @@ import {
 } from "react-router-dom"
 import Player from "./Player/Player";
 import Home from "./Home";
+import WebTorrent from "webtorrent";
 
+
+const TestWatch = () => {
+    const [state, setState] = useState();
+    useEffect(() => {
+        var client = new WebTorrent()
+
+        var torrentId = '259388538FA3C1872D971486F3421D27A557B026'
+
+        client.add(torrentId, function (torrent) {
+            // Torrents can contain many files. Let's use the .mp4 file
+            var file = torrent.files.find(function (file) {
+                return file.name.endsWith('.mp4')
+            })
+
+            // Display the file by adding it to the DOM. Supports video, audio, image, etc. files
+            file.appendTo('body')
+        })
+    }, [])
+    return <div>Kabeer</div>
+}
 function App() {
     const route = useLocation().pathname;
     return (
@@ -23,6 +44,7 @@ function App() {
                 {/*</Route>*/}
                 {route === "/" && <Home/>}
                 {route === "/watch" && <Player/>}
+            {route ==="/test-watch" && <div><TestWatch/></div>}
 
                 {/*<Route exact path="/" element={Home}/>*/}
                 {/*<Route exact path="/watch" element={Player}/>*/}
