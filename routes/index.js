@@ -50,7 +50,7 @@ router.get('/details', function (req, res, next) {
 /* GET home page. */
 router.get('/play', async (req, res, next) => {
     const instance = JSON.parse(await db.get(req.socket.remoteAddress  + ":" + req.query.stream_id));
-    if (!instance || instance.attempts >= 20) return res.status(400).json({"m":"UnAuthorized Link expired"}) && (instance && db.del(req.socket.remoteAddress  + ":" + req.query.stream_id));
+    if (!instance || instance.attempts >= 20) return res.status(400).json({"m":"UnAuthorized Link expired"}) //&& (instance && db.del(req.socket.remoteAddress  + ":" + req.query.stream_id));
     const fileHash = Base64.decode(req.query.file);
     const magnetURL = `magnet:?xt=urn:btih:${instance.hash}&dn=${instance.dn}&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2F9.rarbg.to%3A2710%2Fannounce&tr=udp%3A%2F%2Fp4p.arenabg.ch%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.cyberia.is%3A6969%2Fannounce&tr=http%3A%2F%2Fp4p.arenabg.com%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce`
     const engine = torrentStream(magnetURL);
