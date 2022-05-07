@@ -28,14 +28,22 @@ router.get('/details', async (req, res, next) => {
     }));
     console.log("torrent: ", !!torrent, torrent)
     const streamId = uuid.v4();
-    await db.put(req.socket.remoteAddress + ":" + streamId, JSON.stringify({
+    res.cookie(req.socket.remoteAddress + ":" + streamId, JSON.stringify({
         dn: req.query.dn,
         infoHash: torrent.infoHash,
         hash: req.query.hash,
         name: torrent.name,
         attempts: 0,
         announce: torrent.announce,
-    }));
+    }))
+    // await db.put(req.socket.remoteAddress + ":" + streamId, JSON.stringify({
+    //     dn: req.query.dn,
+    //     infoHash: torrent.infoHash,
+    //     hash: req.query.hash,
+    //     name: torrent.name,
+    //     attempts: 0,
+    //     announce: torrent.announce,
+    // }));
     res.header("Access-Control-Allow-Origin", "*");
     res.json({
         name: torrent.name,
@@ -64,7 +72,8 @@ router.get('/details', async (req, res, next) => {
 });
 /* GET home page. */
 router.get('/play', async (req, res, next) => {
-    const instance = JSON.parse(await db.get(req.socket.remoteAddress + ":" + req.query.stream_id));
+    // const instance = JSON.parse(await db.get(req.socket.remoteAddress + ":" + req.query.stream_id));
+    const instance = JSON.parse(req.cookies[(req.socket.remoteAddress + ":" + req.query.stream_id)]);
     if (!instance || instance.attempts >= 20) return res.status(400).json({"m": "UnAuthorized Link expired"}) //&& (instance && db.del(req.socket.remoteAddress  + ":" + req.query.stream_id));
     const fileHash = Base64.decode(req.query.file);
     const torrent = await client.get(instance.hash);
@@ -75,7 +84,7 @@ router.get('/play', async (req, res, next) => {
     const stream = file.createReadStream();
     stream.on("data", data => res.write(data));
     stream.on("end", () => res.end());
-    await db.put(req.socket.remoteAddress + ":" + req.query.stream_id, JSON.stringify({
+    res.cookie(req.socket.remoteAddress + ":" + req.query.stream_id, JSON.stringify({
         ...instance,
         attempts: instance.attempts + 1
     }));
