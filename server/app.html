@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="ie=edge" http-equiv="X-UA-Compatible" />
+    <title>Kabeer's Network Research</title>
+    <link
+            crossorigin="anonymous"
+            href="https://cdn.jsdelivr.net/gh/Daemonite/material@master/css/material.min.css"
+            old="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.css"
+            rel="stylesheet"
+    />
+</head>
+
+<body>
+<!-- Intro settings -->
+<style>
+    /* Default height for small devices */
+    #intro-example {
+        height: 400px;
+    }
+
+    /* Height for devices larger than 992px */
+    @media (min-width: 992px) {
+        #intro-example {
+            height: 600px;
+        }
+    }
+</style>
+
+<!--https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/intro-mobile.gif?v=1650087449548-->
+<!-- Navbar -->
+<style>
+    #intro-example::after {
+        content: "";
+        /*   background: url(image.jpg); */
+        filter: blur(5px);
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        position: absolute;
+        z-index: -1;
+    }
+    ._container > div > div {
+        display: inline-flex !important;
+    }
+    .scrolling-wrapper {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        white-space: nowrap;
+    }
+    .scrolling-wrapper > div {
+        display: inline-block;
+    }
+    ._container::-webkit-scrollbar {
+        width: 0;  /* Remove scrollbar space */
+        background: transparent;  /* Optional: just make scrollbar invisible */
+    }
+</style>
+<!-- Background image -->
+<div
+        class="w-100 h-100 _container scrolling-wrapper"
+        style="display: inline-flex"
+></div>
+
+<script
+        async
+        src="https://cdn.jsdelivr.net/gh/tsayen/dom-to-image/dist/dom-to-image.min.js"
+></script>
+<script
+        defer
+        src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"
+></script>
+<script
+        async
+        src=" https://cdn.jsdelivr.net/gh/kristopolous/BOOTSTRA.386/v4.4.1/dist/js/bootstrap.min.js"
+></script>
+<script defer type="module">
+    // import showdown from "https://cdn.jsdelivr.net/npm/showdown@2.0.3/dist/showdown.min.js/+esm";
+    import { get, set } from "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm";
+    // import domToImage from "https://cdn.jsdelivr.net/gh/1904labs/dom-to-image-more@2.9.5/src/dom-to-image-more.js";
+    import { renderContent } from "./scripts/renderContent.js";
+    import { getArticle } from "./scripts/parseContent.js";
+    import { getFilesFromDirectory } from "./scripts/getContent.js";
+
+    window["__kn.static.landingpage.research.blogs"] = {
+        blogDelimeter: "blog",
+        contributorsDelimeter: "contributors",
+    };
+
+    /**
+     * Check if d2 is greater than d1
+     * @param {String|Object} d1 Datestring or Date object
+     * @param {String|Object} d2 Datestring or Date object
+     * @param {Number} days Optional number of days to add to d1
+     */
+    function isDateGreater(d1, d2, days) {
+        d1 = new Date(d1);
+        return +new Date(d2) > d1.setDate(d1.getDate() + (days || 0));
+    }
+
+    const StorageIndex = {
+        parsedArticles: "_kn.static.research.landingpage.blogs.cache.articles",
+        files: "_kn.static.research.landingpage.blogs.cache.files",
+        parsedArticlesDate:
+            "_kn.static.research.landingpage.blogs.cache.articles.date",
+    };
+    const dateBetween = (_date) => {
+        const oldDate = new Date(_date.toString());
+        const today = new Date();
+
+        const diff = Math.abs(today - oldDate);
+        const daysBetween = Math.ceil(diff / (1000 * 3600 * 24)); //Round up
+        return daysBetween;
+    };
+    // const dateBetween = () => 9;
+
+    if (
+        (await get(StorageIndex.parsedArticlesDate)) &&
+        dateBetween(await get(StorageIndex.parsedArticlesDate)) < 6
+    ) {
+        const articles = await get(StorageIndex.parsedArticles);
+        await renderContent({
+            articles: articles,
+            horizontal: true,
+            container: document.querySelector("._container"),
+        });
+    } else {
+        const domParser = new DOMParser();
+        marked.makeHtml = marked.parse;
+        // const showdownParser = new showdown.Converter();
+
+        const files = await getFilesFromDirectory(); // await get(StorageIndex.files); //await getFilesFromDirectory();
+        await set(StorageIndex.files, files);
+        const Articles = [];
+        for (const file of files)
+            await getArticle(domParser, marked, window.domtoimage, file).then(
+                async (article) => {
+                    Articles.push(article);
+                    await set(StorageIndex.parsedArticles, Articles);
+                    await set(StorageIndex.parsedArticlesDate, new Date());
+                    await renderContent({
+                        articles: Articles,
+                        horizontal: true,
+                        container: document.querySelector("._container"),
+                    });
+                }
+            );
+        // Articles.push(
+        // await getArticle(domParser, marked, window.domtoimage, file)
+        // );
+        // await set(StorageIndex.parsedArticles, Articles);
+        // await set(StorageIndex.parsedArticlesDate, new Date());
+        // await renderContent({
+        // articles: Articles,
+        // container: document.querySelector("._container"),
+        // });
+    }
+    const observer = new MutationObserver(async () => {
+        console.log("mutation observed")
+        await window.parent.__KN_SET_IFRAME_WIDTH(window.getComputedStyle(document.querySelector("._container")).getPropertyValue('height'))
+    });
+    observer.observe(document.querySelector("._container"), {subtree: true, childList: true});
+    await window.parent.__KN_SET_IFRAME_WIDTH(window.getComputedStyle(document.querySelector("._container")).getPropertyValue('height'));
+    console.log(window.getComputedStyle(document.querySelector("._container")).getPropertyValue('height'))
+</script>
+<!-- MDB -->
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.11.0/mdb.min.js"
+></script>
+<!-- Font Awesome -->
+<link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        rel="stylesheet"
+/>
+<!-- Google Fonts -->
+<link
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        rel="stylesheet"
+/>
+</body>
+</html>

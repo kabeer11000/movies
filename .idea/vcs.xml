@@ -2,6 +2,11 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/movies-with-compose" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/public" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/streaming/confluence" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/streaming/go-peerflix" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/streaming/goTorrent" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/streaming/storegRPC/grpc-go" vcs="Git" />
   </component>
 </project>
